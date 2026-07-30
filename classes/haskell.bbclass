@@ -98,7 +98,9 @@ do_configure() {
     # packages to fail, so only utilize them if we need to.
     if [ "${DISABLE_GHC_WRAPPERS}" != "1" ] && [ ! -e "${S}/configure" ]; then
         RUNGHC_OE_OPTS="--with-gcc=ghc-cc --with-ld=ghc-ld"
-        GHC_EXTRA_OPTS="-pgmc ghc-cc -pgml ghc-ld"
+        # -optl-lpthread: modern binutils no longer auto-pulls libpthread for
+        # symbols from the GHC RTS (pthread_mutex_trylock, etc.).
+        GHC_EXTRA_OPTS="-pgmc ghc-cc -pgml ghc-ld -optl-lpthread"
         HSC2HS_EXTRA_OPTS="-c ghc-cc -l ghc-ld"
     fi
 
