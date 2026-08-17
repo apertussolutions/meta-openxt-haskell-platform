@@ -1,6 +1,6 @@
 DESCRIPTION = "MissingH is a library of all sorts of utility functions for Haskell programmers."
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM="file://LICENSE;md5=627898c68e4e827265f834a5ebc07132"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=627898c68e4e827265f834a5ebc07132"
 
 HPN = "MissingH"
 

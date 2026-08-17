@@ -1,6 +1,6 @@
 DESCRIPTION = "A logging framework for Haskell, roughly similar to Python's logging module."
 LICENSE = "LGPL"
-LIC_FILES_CHKSUM="file://LICENSE;md5=4caeb2dab378336aa0ab4f6af6a04617"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=4caeb2dab378336aa0ab4f6af6a04617"
 
 inherit hackage
 

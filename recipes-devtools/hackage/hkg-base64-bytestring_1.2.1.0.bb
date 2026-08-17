@@ -1,6 +1,6 @@
 DESCRIPTION = "Fast and efficient encoding and decoding of base64-encoded strings."
 LICENSE = "BSD3"
-LIC_FILES_CHKSUM="file://LICENSE;md5=5c600bfc7377e36f0fb87990f96821e5"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=5c600bfc7377e36f0fb87990f96821e5"
 
 inherit hackage
 
