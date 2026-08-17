@@ -7,4 +7,4 @@ DEPENDS += " \
     binutils \
 "
 
-S = "${WORKDIR}/ghc-${PV}"
+S = "${UNPACKDIR}/ghc-${PV}"

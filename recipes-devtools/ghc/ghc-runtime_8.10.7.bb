@@ -92,10 +92,10 @@ EOF
     # put --sysroot into STANDARD_OPTS: GHC passes those as its own flags
     # (not only -optc), which breaks ghc-stage1.
     #
-    # Append C/LD flags to WORKDIR/build.mk (not ${S}/mk/build.mk):
-    # ghc-8.10.7.inc's do_compile:prepend re-copies WORKDIR/build.mk into
+    # Append C/LD flags to UNPACKDIR/build.mk (not ${S}/mk/build.mk):
+    # ghc-8.10.7.inc's do_compile:prepend re-copies UNPACKDIR/build.mk into
     # ${S}/mk/ and would wipe any post-copy append in do_compile:prepend.
-    cat >> ${WORKDIR}/build.mk <<EOF
+    cat >> ${UNPACKDIR}/build.mk <<EOF
 # OE: bootstrap (host) and target C/LD flags for ABI-correct RTS
 CONF_CC_OPTS_STAGE0 += ${BUILD_CFLAGS}
 CONF_CC_OPTS_STAGE1 += ${CFLAGS}

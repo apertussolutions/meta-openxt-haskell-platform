@@ -11,7 +11,7 @@ SRC_URI[sha256sum] = "e3eef6229ce9908dfe1ea41436befb0455fefb1932559e860ad4c606b0
 LIC_FILES_CHKSUM = "file://LICENSE;md5=7cb08deb79c4385547f57d6bb2864e0f"
 
 do_compile:prepend() {
-    cp ${WORKDIR}/build.mk ${S}/mk/
+    cp ${UNPACKDIR}/build.mk ${S}/mk/
 }
 
 do_install() {

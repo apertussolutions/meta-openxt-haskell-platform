@@ -2,7 +2,7 @@ HOMEPAGE = "https://hackage.haskell.org/package/${HPN}"
 
 SRC_URI = "http://hackage.haskell.org/package/${HPN}-${PV}/${HPN}-${PV}.tar.gz"
 
-S = "${WORKDIR}/${HPN}-${PV}"
+S = "${UNPACKDIR}/${HPN}-${PV}"
 
 BBCLASSEXTEND = "native"
 

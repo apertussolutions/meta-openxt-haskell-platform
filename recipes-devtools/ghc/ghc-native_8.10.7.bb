@@ -30,7 +30,7 @@ do_configure() {
 }
 
 do_install:append() {
-    install -m 755 "${WORKDIR}/ghc-cc" "${D}${bindir}/ghc-cc"
-    install -m 755 "${WORKDIR}/ghc-ld" "${D}${bindir}/ghc-ld"
-    install -m 755 "${WORKDIR}/ghc-pkg-wrapper" "${D}${bindir}/ghc-pkg-wrapper"
+    install -m 755 "${UNPACKDIR}/ghc-cc" "${D}${bindir}/ghc-cc"
+    install -m 755 "${UNPACKDIR}/ghc-ld" "${D}${bindir}/ghc-ld"
+    install -m 755 "${UNPACKDIR}/ghc-pkg-wrapper" "${D}${bindir}/ghc-pkg-wrapper"
 }
