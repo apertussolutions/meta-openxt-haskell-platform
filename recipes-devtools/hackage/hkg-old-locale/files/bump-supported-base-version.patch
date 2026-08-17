@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [OpenXT]
+
 --- a/old-locale.cabal
 +++ b/old-locale.cabal
 @@ -31,5 +31,5 @@ Library

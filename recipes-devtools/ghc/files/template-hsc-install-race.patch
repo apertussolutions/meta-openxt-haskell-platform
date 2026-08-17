@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [OpenXT]
+
 --- a/utils/hsc2hs/ghc.mk
 +++ b/utils/hsc2hs/ghc.mk
 @@ -54,6 +54,7 @@ install: install_utils/hsc2hs_dist_insta

@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [OpenXT]
+
 --- a/hslogger.cabal
 +++ b/hslogger.cabal
 @@ -64,7 +64,7 @@ library

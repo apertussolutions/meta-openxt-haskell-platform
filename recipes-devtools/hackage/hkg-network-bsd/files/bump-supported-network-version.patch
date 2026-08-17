@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [OpenXT]
+
 --- a/network-bsd.cabal
 +++ b/network-bsd.cabal
 @@ -75,7 +75,7 @@ library

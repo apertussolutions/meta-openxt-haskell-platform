@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [OpenXT]
+
 --- a/unliftio-core.cabal
 +++ b/unliftio-core.cabal
 @@ -30,6 +30,6 @@ library

@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [OpenXT]
+
 --- a/polyparse.cabal
 +++ b/polyparse.cabal
 @@ -47,7 +47,7 @@ source-repository this

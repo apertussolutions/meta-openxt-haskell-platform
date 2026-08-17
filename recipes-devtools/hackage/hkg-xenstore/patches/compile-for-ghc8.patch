@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [OpenXT]
+
 --- a/System/Xen/Store.hs
 +++ b/System/Xen/Store.hs
 @@ -156,7 +156,7 @@ data XsHandle = XsHandle

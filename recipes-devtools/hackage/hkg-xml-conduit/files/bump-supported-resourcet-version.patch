@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [OpenXT]
+
 --- a/xml-conduit.cabal
 +++ b/xml-conduit.cabal
 @@ -23,7 +23,7 @@ library

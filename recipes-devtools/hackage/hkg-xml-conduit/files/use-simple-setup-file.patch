@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [OpenXT]
+
 --- a/Setup.hs
 +++ b/Setup.hs
 @@ -1,6 +1,2 @@
