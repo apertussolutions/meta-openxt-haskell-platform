@@ -7,6 +7,6 @@ inherit hackage
 SRC_URI[md5sum] = "31af0f6c79d5d18dd09f4611683b91ff"
 SRC_URI[sha256sum] = "32895a4748508da58207b4867266601af6259b7109af80bbf5d2e9e598e016a6"
 
-DEPENDS_append = "hkg-byteable hkg-memory"
+DEPENDS:append = "hkg-byteable hkg-memory"
 
 PR = "r1"

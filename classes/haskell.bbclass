@@ -5,10 +5,10 @@ HPV ?= "${PV}"
 
 SECTION = "devel/haskell"
 
-DEPENDS_append_class-target += " \
+DEPENDS:append:class-target = " \
     ghc-runtime \
 "
-DEPENDS_append = " \
+DEPENDS:append = " \
     ghc-native \
 "
 PACKAGES = " \
@@ -18,23 +18,23 @@ PACKAGES = " \
     ${PN}-dbg \
     ${PN}-dev \
 "
-FILES_${PN}_append = " \
+FILES:${PN}:append = " \
     ${libdir}/ghc-*/${HPN}-${HPV}/libH*.so \
     ${libdir}/ghc-*/package.conf.d/*.conf \
     ${bindir}/* \
 "
-FILES_${PN}-doc_append = " \
+FILES:${PN}-doc:append = " \
     ${datadir}/* \
 "
-FILES_${PN}-staticdev_append = " \
+FILES:${PN}-staticdev:append = " \
     ${libdir}/ghc-*/${HPN}-${HPV}/libHS*.a \
 "
-FILES_${PN}-dbg_append = " \
+FILES:${PN}-dbg:append = " \
     ${libdir}/ghc-*/${HPN}-${HPV}/*.o \
     ${libdir}/ghc-*/${HPN}-${HPV}/.debug \
     ${prefix}/src/debug \
 "
-FILES_${PN}-dev_append = " \
+FILES:${PN}-dev:append = " \
     ${libdir}/ghc-*/${HPN}-${HPV}/* \
 "
 
@@ -46,8 +46,8 @@ CONFIGURE_FILES += " \
 
 RUNGHC = "runghc"
 
-PACKAGE_DB_PATH_class-native = "${STAGING_LIBDIR_NATIVE}/ghc-8.10.7/package.conf.d"
-PACKAGE_DB_PATH_class-target = "${STAGING_LIBDIR}/ghc-8.10.7/package.conf.d"
+PACKAGE_DB_PATH:class-native = "${STAGING_LIBDIR_NATIVE}/ghc-8.10.7/package.conf.d"
+PACKAGE_DB_PATH:class-target = "${STAGING_LIBDIR}/ghc-8.10.7/package.conf.d"
 
 get_ghc_version() {
     ghc_version=$(ghc-pkg --version)
@@ -58,7 +58,7 @@ get_ghc_version() {
 # our advantage for native class, target class need to be configured with their
 # target dependencies, so substitute the target paths for WORKDIR starging so
 # ghc-pkg finds them.
-do_configure_prepend_class-target() {
+do_configure:prepend:class-target() {
     ghc_version=$(get_ghc_version)
     for pkgconf in ${STAGING_LIBDIR}/ghc-${ghc_version}/package.conf.d/*.conf; do
         if [ -f "${pkgconf}" ]; then
@@ -71,7 +71,7 @@ do_configure_prepend_class-target() {
 }
 
 # generate the Setup.hs file if it doesn't exist
-do_configure_prepend() {
+do_configure:prepend() {
     if [ ! -e "${S}/Setup.hs" ] && [ ! -e "${S}/Setup.lhs" ] ; then
         echo "import Distribution.Simple" > "${S}/Setup.hs"
         echo "main = defaultMain" >> "${S}/Setup.hs"
@@ -146,7 +146,7 @@ do_local_package_conf[dirs] = "${B}"
 do_fixup_rpath() {
     :
 }
-do_fixup_rpath_class-target() {
+do_fixup_rpath:class-target() {
     ghc_version=$(get_ghc_version)
 
     for f in \

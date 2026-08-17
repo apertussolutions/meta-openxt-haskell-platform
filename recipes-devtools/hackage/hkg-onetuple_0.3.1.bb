@@ -7,7 +7,7 @@ inherit hackage
 SRC_URI[md5sum] = "efa3a0fb0712f6560201331db8579faf"
 SRC_URI[sha256sum] = "98853682d52fb4cc37a45cd186fbd77cf2565d3df5171acc4cf026427e103eef"
 
-DEPENDS_append = "\
+DEPENDS:append = "\
     hkg-base-orphans \
     hkg-hashable \
 "

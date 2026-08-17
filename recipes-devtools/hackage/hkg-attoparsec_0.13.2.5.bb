@@ -7,7 +7,7 @@ inherit hackage
 SRC_URI[md5sum] = "6b0a5588aa7f529cff18ddb6e0a331f3"
 SRC_URI[sha256sum] = "21e0f38eaa1957bf471276afa17651c125a38924575f12c2cbd2fa534b45686f"
 
-DEPENDS_append = "\
+DEPENDS:append = "\
     hkg-scientific \
 "
 

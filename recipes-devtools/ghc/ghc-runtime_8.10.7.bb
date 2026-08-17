@@ -6,7 +6,7 @@ require ghc-${PV}.inc
 PACKAGES = " \
     ${PN} \
 "
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${libdir}/ghc-${PV}/array-*/*.so \
     ${libdir}/ghc-${PV}/base-*/*.so \
     ${libdir}/ghc-${PV}/binary-*/*.so \
@@ -41,14 +41,14 @@ FILES_${PN} = " \
     ${libdir}/ghc-${PV}/unix-*/*.so \
     ${libdir}/ghc-${PV}/utf8-string-*/*.so \
 "
-INSANE_SKIP_${PN} = "installed-vs-shipped"
+INSANE_SKIP:${PN} = "installed-vs-shipped"
 
 DEPENDS += " \
     ghc-native \
     libffi \
     ncurses \
 "
-BUILD_RANLIB_remove = "-D"
+BUILD_RANLIB:remove = "-D"
 
 # GHC passes SettingsCCompilerCommand to posix_spawnp as a *single* program
 # name. OE's ${CC} is multi-word ("x86_64-oe-linux-gcc -m64 … --sysroot=…"),
@@ -93,8 +93,8 @@ EOF
     # (not only -optc), which breaks ghc-stage1.
     #
     # Append C/LD flags to WORKDIR/build.mk (not ${S}/mk/build.mk):
-    # ghc-8.10.7.inc's do_compile_prepend re-copies WORKDIR/build.mk into
-    # ${S}/mk/ and would wipe any post-copy append in do_compile_prepend.
+    # ghc-8.10.7.inc's do_compile:prepend re-copies WORKDIR/build.mk into
+    # ${S}/mk/ and would wipe any post-copy append in do_compile:prepend.
     cat >> ${WORKDIR}/build.mk <<EOF
 # OE: bootstrap (host) and target C/LD flags for ABI-correct RTS
 CONF_CC_OPTS_STAGE0 += ${BUILD_CFLAGS}
@@ -106,7 +106,7 @@ EOF
 }
 
 # Fail early if the RTS was still built against a newer host libc.
-do_install_append() {
+do_install:append() {
     local rts_a="${D}${libdir}/ghc-${PV}/rts/libHSrts.a"
     if [ -f "${rts_a}" ] && nm "${rts_a}" 2>/dev/null | grep -q '__isoc23_'; then
         bbfatal "ghc-runtime RTS (${rts_a}) references host-only glibc symbols (__isoc23_*). Target toolchain was not used for RTS C objects."

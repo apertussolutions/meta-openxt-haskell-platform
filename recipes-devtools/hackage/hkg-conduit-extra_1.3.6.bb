@@ -7,7 +7,7 @@ inherit hackage
 SRC_URI[md5sum] = "3d1180846e087af1f392d6740b8f5c00"
 SRC_URI[sha256sum] = "8950c38049d892c38590d389bed49ecf880671f58ec63dd4709d9fe3d4b8f153"
 
-DEPENDS_append = "\
+DEPENDS:append = "\
     hkg-async \
     hkg-attoparsec \
     hkg-conduit \

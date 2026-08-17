@@ -7,12 +7,12 @@ inherit hackage
 SRC_URI[md5sum] = "c0001f5bf4adc5d9c0513bb9c9d445f7"
 SRC_URI[sha256sum] = "2aae45cf6cf26410aad5f7d1ced3db9255a540fb0a36186bd187122c5fdb770d"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "\
     file://allow-namespaced-tags.patch \
 "
 
-DEPENDS_append = "\
+DEPENDS:append = "\
     hkg-cereal \
     hkg-conduit \
     hkg-exceptions \

@@ -7,7 +7,7 @@ inherit hackage
 SRC_URI[md5sum] = "721e0211271d72032cd8cb63af2ec4d1"
 SRC_URI[sha256sum] = "e436875ccd6664d4111e601c8e2ec6ba9473979eac49b23a1bdb88f80e95099e"
 
-DEPENDS_append = "\
+DEPENDS:append = "\
     hkg-async \
     hkg-unliftio-core \
 "

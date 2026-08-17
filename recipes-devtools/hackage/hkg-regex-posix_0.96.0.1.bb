@@ -11,7 +11,7 @@ DEPENDS += "\
     hkg-regex-base \
 "
 
-RDEPENDS_${HPN} += "\
+RDEPENDS:${HPN} += "\
     libc6 \
 "
 

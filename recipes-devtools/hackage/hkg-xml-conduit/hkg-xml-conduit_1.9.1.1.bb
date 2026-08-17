@@ -7,13 +7,13 @@ inherit hackage
 SRC_URI[md5sum] = "81ec52b7b6ffcd1d04c0cee8700ca477"
 SRC_URI[sha256sum] = "bdb117606c0b56ca735564465b14b50f77f84c9e52e31d966ac8d4556d3ff0ff"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "\
     file://bump-supported-resourcet-version.patch \
     file://use-simple-setup-file.patch \
 "
 
-DEPENDS_append = "\
+DEPENDS:append = "\
     hkg-attoparsec \
     hkg-blaze-html \
     hkg-blaze-markup \

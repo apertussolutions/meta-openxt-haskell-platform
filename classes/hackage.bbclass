@@ -9,7 +9,8 @@ BBCLASSEXTEND = "native"
 # Prefix to avoid conflicts with synonyms packages (e.g, curl).  Some recipes
 # will have to define HPN since hackage URI are case-sensitive (Apache?), but
 # ipk do not handle upper-case package-name.
-HPN ?= "${@d.getVar("BPN", True).split("hkg-", 1)[1]}"
+# Strip leading hkg- from BPN when present (wrynose-safe).
+HPN ?= "${@ (lambda b: b.split('hkg-', 1)[1] if b.startswith('hkg-') else b)(d.getVar('BPN') or '') }"
 
 inherit haskell
 

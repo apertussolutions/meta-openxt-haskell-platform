@@ -7,6 +7,6 @@ inherit hackage
 SRC_URI[md5sum] = "de5a05f8b26b7d7ba62b981a5bd7fc9c"
 SRC_URI[sha256sum] = "9eaa989ad4534438b5beb51c1d3a4c8f6a088fdff0b259a5394fbf39aaee04da"
 
-INSANE_SKIP_${PN} = "file-rdeps"
+INSANE_SKIP:${PN} = "file-rdeps"
 
 PR = "r1"

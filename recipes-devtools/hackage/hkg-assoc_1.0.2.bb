@@ -7,7 +7,7 @@ inherit hackage
 SRC_URI[md5sum] = "5ac0edb289ccb830ab5060c3f4c58654"
 SRC_URI[sha256sum] = "d8988dc6e8718c7a3456515b769c9336aeeec730cf86fc5175247969ff8f144f"
 
-DEPENDS_append = "\
+DEPENDS:append = "\
     hkg-bifunctors \
     hkg-tagged \
 "

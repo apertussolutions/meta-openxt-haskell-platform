@@ -9,6 +9,6 @@ SRC_URI[sha256sum] = "d3b171895698c73da24d7ce97543f725d26637f038de670c0fd4012ca7
 
 # NOTE: we should really try to deprecate this. it's very old.
 
-DEPENDS_append = "hkg-crypto-cipher-types hkg-securemem"
+DEPENDS:append = "hkg-crypto-cipher-types hkg-securemem"
 
 PR = "r1"

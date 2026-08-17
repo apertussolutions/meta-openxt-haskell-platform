@@ -7,7 +7,7 @@ inherit hackage
 SRC_URI[md5sum] = "74e7a3fc5f96d55eba07eb1daf905172"
 SRC_URI[sha256sum] = "3a5927037a10ae63e605c02228c4027c32b7bab1985ae7b5379e6363b3cd5ce4"
 
-DEPENDS_append = "\
+DEPENDS:append = "\
     hkg-th-abstraction \
 "
 

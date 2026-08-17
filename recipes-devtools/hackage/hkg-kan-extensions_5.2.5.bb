@@ -7,7 +7,7 @@ inherit hackage
 SRC_URI[md5sum] = "d84fe712345d6b6b60a75fb70bbf6a19"
 SRC_URI[sha256sum] = "b914dccc040caf1d8764b99df1028dad3e4fdf46c262192e54b59c9da66ead22"
 
-DEPENDS_append = "\
+DEPENDS:append = "\
     hkg-adjunctions \
     hkg-comonad \
     hkg-contravariant \
