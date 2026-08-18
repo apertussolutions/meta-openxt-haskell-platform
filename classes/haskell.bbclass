@@ -91,17 +91,19 @@ do_configure() {
         ${RUNGHC} Setup.*hs clean --verbose
     fi
 
-    # some packages supply their own configure script. if this script
-    # exists, we don't need to use the ghc-* wrappers as the OE env
-    # vars will be automatically used. we still need to differentiate
-    # the two cases as the ghc-* arguments will actually cause these
-    # packages to fail, so only utilize them if we need to.
-    if [ "${DISABLE_GHC_WRAPPERS}" != "1" ] && [ ! -e "${S}/configure" ]; then
-        RUNGHC_OE_OPTS="--with-gcc=ghc-cc --with-ld=ghc-ld"
+    # Always drive C compile/link through ghc-cc/ghc-ld so the cross
+    # toolchain + sysroot are used. ghc-native bakes SettingsCCompilerCommand
+    # as host "gcc", which on wrynose links against /lib/libc.so.6 and fails.
+    # Cabal --with-gcc/--with-ld can break packages that ship their own
+    # configure script, so only pass those when there is no configure.
+    if [ "${DISABLE_GHC_WRAPPERS}" != "1" ]; then
         # -optl-lpthread: modern binutils no longer auto-pulls libpthread for
         # symbols from the GHC RTS (pthread_mutex_trylock, etc.).
         GHC_EXTRA_OPTS="-pgmc ghc-cc -pgml ghc-ld -optl-lpthread"
         HSC2HS_EXTRA_OPTS="-c ghc-cc -l ghc-ld"
+        if [ ! -e "${S}/configure" ]; then
+            RUNGHC_OE_OPTS="--with-gcc=ghc-cc --with-ld=ghc-ld"
+        fi
     fi
 
     ${RUNGHC} Setup.*hs configure \

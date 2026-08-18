@@ -41,7 +41,8 @@ FILES:${PN} = " \
     ${libdir}/ghc-${PV}/unix-*/*.so \
     ${libdir}/ghc-${PV}/utf8-string-*/*.so \
 "
-INSANE_SKIP:${PN} = "installed-vs-shipped"
+INSANE_SKIP:${PN} = "installed-vs-shipped ldflags"
+RDEPENDS:${PN} += "libffi"
 
 DEPENDS += " \
     ghc-native \
