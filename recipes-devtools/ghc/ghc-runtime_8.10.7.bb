@@ -45,10 +45,16 @@ INSANE_SKIP:${PN} = "installed-vs-shipped"
 
 DEPENDS += " \
     ghc-native \
+    gmp \
     libffi \
     ncurses \
 "
 BUILD_RANLIB:remove = "-D"
+
+# In-tree GMP 6.2.1 configure fails under GCC 15 / C23 (empty () = void).
+# Use the target gmp already in the sysroot instead.
+# Also serialize make: parallel library configures race on shared stamp files.
+PARALLEL_MAKE = ""
 
 # GHC passes SettingsCCompilerCommand to posix_spawnp as a *single* program
 # name. OE's ${CC} is multi-word ("x86_64-oe-linux-gcc -m64 … --sysroot=…"),
@@ -79,7 +85,8 @@ EOF
                 --host=${BUILD_SYS} \
                 --build=${BUILD_SYS} \
                 --target=${TARGET_SYS} \
-                --with-intree-gmp \
+                --with-gmp-includes=${STAGING_INCDIR} \
+                --with-gmp-libraries=${STAGING_LIBDIR} \
                 CC="${WORKDIR}/wrappers/target-cc" \
                 CC_STAGE0="${WORKDIR}/wrappers/host-cc" \
                 LD="${WORKDIR}/wrappers/target-ld" \
