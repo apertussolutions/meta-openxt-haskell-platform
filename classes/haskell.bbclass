@@ -81,6 +81,49 @@ do_configure:prepend() {
 GHC_PKG_PATH = "${STAGING_BINDIR_NATIVE}"
 export GHC_PKG_PATH
 
+# Per-recipe wrappers with CC/CCLD/--sysroot baked in at configure time.
+# ghc-native's ghc-cc/ghc-ld expand ${CC} from the environment, but GHC
+# often spawns the linker with a cleaned env — so target links drop
+# --sysroot and fail on absolute paths inside libc.so's linker script
+# ("cannot find /lib/libc.so.6").
+GHC_OE_WRAPPER_DIR = "${WORKDIR}/ghc-wrappers"
+
+# Target: ignore ghc-native's package db (same unit ids as ghc-runtime).
+GHC_CLEAR_PACKAGE_DB = ""
+GHC_CLEAR_PACKAGE_DB:class-target = "-clear-package-db"
+
+haskell_write_oe_wrappers() {
+    install -d "${GHC_OE_WRAPPER_DIR}"
+    cat > "${GHC_OE_WRAPPER_DIR}/ghc-cc" <<EOF
+#! /bin/sh
+exec ${CC} ${CFLAGS} "\$@"
+EOF
+    cat > "${GHC_OE_WRAPPER_DIR}/ghc-ld" <<EOF
+#! /bin/sh
+# Use the OE link driver (gcc + LDFLAGS) so --sysroot from ${CCLD} is
+# applied and glibc's absolute-path linker script resolves in the sysroot.
+exec ${CCLD} ${LDFLAGS} "\$@"
+EOF
+    chmod 0755 "${GHC_OE_WRAPPER_DIR}/ghc-cc" "${GHC_OE_WRAPPER_DIR}/ghc-ld"
+}
+
+haskell_setup_ghc_opts() {
+    GHC_EXTRA_OPTS=""
+    HSC2HS_EXTRA_OPTS=""
+    RUNGHC_OE_OPTS=""
+    GHC_PKG_DB_OPTS="${GHC_CLEAR_PACKAGE_DB} -package-db ${PACKAGE_DB_PATH}"
+
+    if [ "${DISABLE_GHC_WRAPPERS}" != "1" ]; then
+        haskell_write_oe_wrappers
+        # Absolute paths: do not rely on PATH or env when ghc spawns tools.
+        GHC_EXTRA_OPTS="-pgmc ${GHC_OE_WRAPPER_DIR}/ghc-cc -pgml ${GHC_OE_WRAPPER_DIR}/ghc-ld -optl-lpthread"
+        HSC2HS_EXTRA_OPTS="-c ${GHC_OE_WRAPPER_DIR}/ghc-cc -l ${GHC_OE_WRAPPER_DIR}/ghc-ld"
+        if [ ! -e "${S}/configure" ]; then
+            RUNGHC_OE_OPTS="--with-gcc=${GHC_OE_WRAPPER_DIR}/ghc-cc --with-ld=${GHC_OE_WRAPPER_DIR}/ghc-ld"
+        fi
+    fi
+}
+
 do_configure() {
     ghc-pkg recache
     ghc-pkg --package-db "${PACKAGE_DB_PATH}" recache
@@ -91,27 +134,14 @@ do_configure() {
         ${RUNGHC} Setup.*hs clean --verbose
     fi
 
-    # Always drive C compile/link through ghc-cc/ghc-ld so the cross
-    # toolchain + sysroot are used. ghc-native bakes SettingsCCompilerCommand
-    # as host "gcc", which on wrynose links against /lib/libc.so.6 and fails.
-    # Cabal --with-gcc/--with-ld can break packages that ship their own
-    # configure script, so only pass those when there is no configure.
-    if [ "${DISABLE_GHC_WRAPPERS}" != "1" ]; then
-        # -optl-lpthread: modern binutils no longer auto-pulls libpthread for
-        # symbols from the GHC RTS (pthread_mutex_trylock, etc.).
-        GHC_EXTRA_OPTS="-pgmc ghc-cc -pgml ghc-ld -optl-lpthread"
-        HSC2HS_EXTRA_OPTS="-c ghc-cc -l ghc-ld"
-        if [ ! -e "${S}/configure" ]; then
-            RUNGHC_OE_OPTS="--with-gcc=ghc-cc --with-ld=ghc-ld"
-        fi
-    fi
+    haskell_setup_ghc_opts
 
     ${RUNGHC} Setup.*hs configure \
         ${RUNGHC_OE_OPTS} \
         ${EXTRA_CABAL_CONF} \
         --disable-executable-stripping \
         --disable-library-stripping \
-        --ghc-options="-fPIE -dynload sysdep ${GHC_EXTRA_OPTS} -package-db ${PACKAGE_DB_PATH}" \
+        --ghc-options="-fPIE -dynload sysdep ${GHC_EXTRA_OPTS} ${GHC_PKG_DB_OPTS}" \
         --with-ghc-pkg="ghc-pkg-wrapper" \
         --with-hsc2hs="${STAGING_BINDIR_NATIVE}/hsc2hs" \
         --hsc2hs-options="${HSC2HS_EXTRA_OPTS} -x" \
@@ -124,6 +154,10 @@ do_configure() {
 }
 
 do_compile() {
+    # Wrappers must exist for this task too (separate shell from configure).
+    if [ "${DISABLE_GHC_WRAPPERS}" != "1" ]; then
+        haskell_write_oe_wrappers
+    fi
     ${RUNGHC} Setup.*hs build \
         --verbose
 }
