@@ -55,17 +55,23 @@ get_ghc_version() {
 }
 
 # Bitbake will amend the WORKDIR paths it finds (staging stage 2). This works to
-# our advantage for native class, target class need to be configured with their
-# target dependencies, so substitute the target paths for WORKDIR starging so
+# our advantage for native class; target class need to be configured with their
+# target dependencies, so substitute the target paths for WORKDIR staging so
 # ghc-pkg finds them.
+#
+# Also rewrite stale .../recipe-sysroot paths left by ghc-runtime (e.g.
+# integer-gmp's extra libgmp -L dir). Those absolute -L paths make ld pick up
+# a libc.so linker script outside --sysroot, so GROUP(/lib/libc.so.6) is not
+# remapped and the link fails.
 do_configure:prepend:class-target() {
     ghc_version=$(get_ghc_version)
     for pkgconf in ${STAGING_LIBDIR}/ghc-${ghc_version}/package.conf.d/*.conf; do
         if [ -f "${pkgconf}" ]; then
             sed -i \
-                -e "s| /usr/lib| ${STAGING_LIBDIR}|" \
-                -e "s| /usr/include| ${STAGING_INCDIR}|" \
-                $pkgconf
+                -e "s|${TMPDIR}/work/[^[:space:]]*/recipe-sysroot|${STAGING_DIR_TARGET}|g" \
+                -e "s| /usr/lib| ${STAGING_LIBDIR}|g" \
+                -e "s| /usr/include| ${STAGING_INCDIR}|g" \
+                "$pkgconf"
         fi
     done
 }
@@ -111,7 +117,13 @@ haskell_setup_ghc_opts() {
     GHC_EXTRA_OPTS=""
     HSC2HS_EXTRA_OPTS=""
     RUNGHC_OE_OPTS=""
+    # clear-package-db must be effective for package resolution; also pin
+    # GHC_PACKAGE_PATH so Cabal-added -package-db flags cannot resurrect
+    # ghc-native's db ahead of -clear-package-db on the command line.
     GHC_PKG_DB_OPTS="${GHC_CLEAR_PACKAGE_DB} -package-db ${PACKAGE_DB_PATH}"
+    if [ -n "${GHC_CLEAR_PACKAGE_DB}" ]; then
+        export GHC_PACKAGE_PATH="${PACKAGE_DB_PATH}"
+    fi
 
     if [ "${DISABLE_GHC_WRAPPERS}" != "1" ]; then
         haskell_write_oe_wrappers
