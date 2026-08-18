@@ -117,13 +117,8 @@ haskell_setup_ghc_opts() {
     GHC_EXTRA_OPTS=""
     HSC2HS_EXTRA_OPTS=""
     RUNGHC_OE_OPTS=""
-    # clear-package-db must be effective for package resolution; also pin
-    # GHC_PACKAGE_PATH so Cabal-added -package-db flags cannot resurrect
-    # ghc-native's db ahead of -clear-package-db on the command line.
+    # Prefer -clear-package-db via --ghc-options (Cabal rejects GHC_PACKAGE_PATH).
     GHC_PKG_DB_OPTS="${GHC_CLEAR_PACKAGE_DB} -package-db ${PACKAGE_DB_PATH}"
-    if [ -n "${GHC_CLEAR_PACKAGE_DB}" ]; then
-        export GHC_PACKAGE_PATH="${PACKAGE_DB_PATH}"
-    fi
 
     if [ "${DISABLE_GHC_WRAPPERS}" != "1" ]; then
         haskell_write_oe_wrappers
