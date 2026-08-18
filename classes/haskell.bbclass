@@ -5,6 +5,11 @@ HPV ?= "${PV}"
 
 SECTION = "devel/haskell"
 
+# .hi/.dyn_hi and shared objects often embed WORKDIR/TMPDIR (GHC debug
+# paths / former rpaths). Acceptable for this packaging model.
+INSANE_SKIP:${PN} += "buildpaths"
+INSANE_SKIP:${PN}-dev += "buildpaths"
+
 DEPENDS:append:class-target = " \
     ghc-runtime \
 "
@@ -207,8 +212,21 @@ do_fixup_rpath:class-target() {
                 continue
             fi
             RPATH=${RPATH##*RPATH=}
-            FIXED_RPATH=$(echo $RPATH | sed -e "s|${STAGING_DIR_HOST}||g")
-            chrpath -r "${RPATH}" --replace "${FIXED_RPATH}" "${f}"
+            # Replace native sysroot before target sysroot: STAGING_DIR_HOST
+            # (.../recipe-sysroot) is a prefix of .../recipe-sysroot-native,
+            # so a naive strip leaves broken "-native/usr/lib/..." entries.
+            FIXED_RPATH=$(echo "$RPATH" | sed \
+                -e "s|${STAGING_DIR_NATIVE}||g" \
+                -e "s|${STAGING_DIR_HOST}||g" \
+                -e "s|${WORKDIR}/recipe-sysroot-native||g" \
+                -e "s|${WORKDIR}/recipe-sysroot||g" \
+                -e "s|:${D}${prefix}|:${prefix}|g" \
+                -e "s|^${D}${prefix}|${prefix}|g")
+            # Drop empty path components left by the substitutions.
+            FIXED_RPATH=$(echo "$FIXED_RPATH" | sed -e 's|::|:|g' -e 's|^:||' -e 's|:$||')
+            if [ -n "$FIXED_RPATH" ] && [ "$FIXED_RPATH" != "$RPATH" ]; then
+                chrpath -r "$FIXED_RPATH" "$f" || true
+            fi
         fi
     done
 
