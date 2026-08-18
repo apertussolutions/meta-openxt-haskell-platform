@@ -41,7 +41,10 @@ FILES:${PN} = " \
     ${libdir}/ghc-${PV}/unix-*/*.so \
     ${libdir}/ghc-${PV}/utf8-string-*/*.so \
 "
-INSANE_SKIP:${PN} = "installed-vs-shipped ldflags"
+# ldflags: GHC shared objects omit GNU_HASH under our link flags.
+# file-rdeps: RTS links libffi; shlib dependency resolution is brittle
+# across libffi SONAME bumps — declare RDEPENDS and skip the QA noise.
+INSANE_SKIP:${PN} = "installed-vs-shipped ldflags file-rdeps"
 RDEPENDS:${PN} += "libffi"
 
 DEPENDS += " \
