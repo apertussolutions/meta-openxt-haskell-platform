@@ -129,9 +129,23 @@ do_compile:prepend() {
     fi
 }
 
-# Fail early if the RTS was still built against a newer host libc.
+# Fail early if the RTS was still built against a newer *host* libc than
+# the target. On Dunfell-era targets (glibc 2.31) __isoc23_* was host-only.
+# Wrynose target glibc 2.43 exports those symbols, so skip the check when
+# the sysroot libc already provides them.
 do_install:append() {
     local rts_a="${D}${libdir}/ghc-${PV}/rts/libHSrts.a"
+    local libc
+    for libc in "${STAGING_DIR_TARGET}/lib/libc.so.6" \
+                "${STAGING_DIR_TARGET}/lib64/libc.so.6" \
+                "${STAGING_DIR_TARGET}/usr/lib/libc.so.6"; do
+        [ -e "$libc" ] || continue
+        if nm -D "$libc" 2>/dev/null | grep -q '__isoc23_'; then
+            bbnote "Target libc provides __isoc23_*; skipping host-glibc RTS check"
+            return 0
+        fi
+        break
+    done
     if [ -f "${rts_a}" ] && nm "${rts_a}" 2>/dev/null | grep -q '__isoc23_'; then
         bbfatal "ghc-runtime RTS (${rts_a}) references host-only glibc symbols (__isoc23_*). Target toolchain was not used for RTS C objects."
     fi
