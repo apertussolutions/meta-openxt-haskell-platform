@@ -1,6 +1,10 @@
 inherit native
 require ghc-${PV}.inc
 
+# Stage1/library packaging races under high -j (missing transformers dyn
+# interfaces while mtl compiles). Serialize the native bootstrap.
+PARALLEL_MAKE = ""
+
 # This is oddly required because there is no good way to pass ${CC} as set per
 # bitbake to runghc. One might think of using --ghc-options="-pgmc ${CC%% *}
 # -otpc ${CC#* }", but it does not manage to parse the options correctly...
