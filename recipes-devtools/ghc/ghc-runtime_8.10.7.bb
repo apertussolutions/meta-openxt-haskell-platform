@@ -103,13 +103,30 @@ EOF
     # ghc-8.10.7.inc's do_compile:prepend re-copies UNPACKDIR/build.mk into
     # ${S}/mk/ and would wipe any post-copy append in do_compile:prepend.
     cat >> ${UNPACKDIR}/build.mk <<EOF
-# OE: bootstrap (host) and target C/LD flags for ABI-correct RTS
-CONF_CC_OPTS_STAGE0 += ${BUILD_CFLAGS}
-CONF_CC_OPTS_STAGE1 += ${CFLAGS}
-CONF_CC_OPTS_STAGE2 += ${CFLAGS}
+# OE: bootstrap (host) and target C/LD flags for ABI-correct RTS.
+# -std=gnu17: GHC 8.10 C sources (e.g. utils/hp2ps) use K&R
+# "extern void *realloc();" which is (void) under GCC 15 / C23.
+CONF_CC_OPTS_STAGE0 += ${BUILD_CFLAGS} -std=gnu17
+CONF_CC_OPTS_STAGE1 += ${CFLAGS} -std=gnu17
+CONF_CC_OPTS_STAGE2 += ${CFLAGS} -std=gnu17
 CONF_GCC_LINKER_OPTS_STAGE1 += ${LDFLAGS}
 CONF_GCC_LINKER_OPTS_STAGE2 += ${LDFLAGS}
 EOF
+}
+
+# hp2ps uses K&R "extern void *malloc();" which is (void) under C23.
+# Strip those declarations so <stdlib.h> prototypes are used (also covered
+# by -std=gnu17 in build.mk, but keep this for hosts defaulting to C23).
+do_compile:prepend() {
+    local u="${S}/utils/hp2ps/Utilities.c"
+    if [ -f "$u" ]; then
+        grep -q '#include <stdlib.h>' "$u" || \
+            sed -i '/#include <string.h>/a #include <stdlib.h>' "$u"
+        sed -i \
+            -e '/^extern void\* malloc();$/d' \
+            -e '/^[[:space:]]*extern void \*realloc();$/d' \
+            "$u"
+    fi
 }
 
 # Fail early if the RTS was still built against a newer host libc.
