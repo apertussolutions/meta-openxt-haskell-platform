@@ -13,7 +13,12 @@ DEPENDS += "\
     hkg-random \
 "
 
-# Library-only: Cabal appends --ghc-options after its inplace -package-db, so
-# our target -clear-package-db drops the just-built HaXml unit and executable
-# links fail. Dom0 only needs the library.
-EXTRA_CABAL_CONF:append = " --disable-executables"
+# Library-only on target: Cabal appends --ghc-options after its inplace
+# -package-db, so -clear-package-db drops the just-built HaXml unit and
+# executable links fail. Dom0 only needs the library.
+do_compile:class-target() {
+    if [ "${DISABLE_GHC_WRAPPERS}" != "1" ]; then
+        haskell_write_oe_wrappers
+    fi
+    ${RUNGHC} Setup.*hs build lib:${HPN} --verbose
+}
