@@ -12,3 +12,8 @@ DEPENDS += "\
     hkg-polyparse \
     hkg-random \
 "
+
+# Library-only: Cabal appends --ghc-options after its inplace -package-db, so
+# our target -clear-package-db drops the just-built HaXml unit and executable
+# links fail. Dom0 only needs the library.
+EXTRA_CABAL_CONF:append = " --disable-executables"

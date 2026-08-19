@@ -13,4 +13,8 @@ DEPENDS:append = " \
     hkg-hashable \
 "
 
+# cbits/defs.h declares check_impl_specific() with an empty parameter list;
+# under C23/GCC 15 that is void(void) and conflicts with the definition.
+CFLAGS:append = " -std=gnu17"
+
 PR = "r1"
