@@ -123,10 +123,10 @@ haskell_setup_ghc_opts() {
     HSC2HS_EXTRA_OPTS=""
     RUNGHC_OE_OPTS=""
     # Prefer -clear-package-db via --ghc-options (Cabal rejects GHC_PACKAGE_PATH).
-    # Cabal passes -package-db dist/package.conf.inplace before --ghc-options, so
-    # a trailing -clear-package-db would drop the inplace db and break executable
-    # links against the just-built library. Re-add inplace after clear+target.
-    GHC_PKG_DB_OPTS="${GHC_CLEAR_PACKAGE_DB} -package-db ${PACKAGE_DB_PATH} -package-db dist/package.conf.inplace"
+    # Note: Cabal appends --ghc-options after its inplace -package-db, so
+    # -clear-package-db here drops inplace for executable links. Packages that
+    # only need the library should use EXTRA_CABAL_CONF --disable-executables.
+    GHC_PKG_DB_OPTS="${GHC_CLEAR_PACKAGE_DB} -package-db ${PACKAGE_DB_PATH}"
 
     if [ "${DISABLE_GHC_WRAPPERS}" != "1" ]; then
         haskell_write_oe_wrappers
