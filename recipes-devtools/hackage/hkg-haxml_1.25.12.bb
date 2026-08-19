@@ -22,3 +22,7 @@ do_compile:class-target() {
     fi
     ${RUNGHC} Setup.*hs build lib:${HPN} --verbose
 }
+
+do_install:class-target() {
+    ${RUNGHC} Setup.*hs copy lib:${HPN} --destdir="${D}" --verbose
+}
