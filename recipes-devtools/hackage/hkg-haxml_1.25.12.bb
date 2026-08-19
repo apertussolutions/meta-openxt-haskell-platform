@@ -25,4 +25,12 @@ do_compile:class-target() {
 
 do_install:class-target() {
     ${RUNGHC} Setup.*hs copy lib:${HPN} --destdir="${D}" --verbose
+
+    # Same package.conf.d install as haskell.bbclass do_install (override
+    # replaces the whole function).
+    if [ -f "${B}/${HPN}-${HPV}.conf" ]; then
+        ghc_version=$(get_ghc_version)
+        install -m 755 -d ${D}${libdir}/ghc-${ghc_version}/package.conf.d
+        install -m 644 ${B}/${HPN}-${HPV}.conf ${D}${libdir}/ghc-${ghc_version}/package.conf.d
+    fi
 }
