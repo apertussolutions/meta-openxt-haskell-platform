@@ -26,4 +26,9 @@ DEPENDS:append = "\
     hkg-xml-types \
 "
 
+# Template Haskell loads dependency .so at compile time; target-sysroot
+# wrappers produce OE-interpreter ELFs that Debian hosts cannot dlopen.
+# Keep host gcc for compile; haskell.bbclass still passes -optl--sysroot.
+DISABLE_GHC_WRAPPERS = "1"
+
 PR = "r1"

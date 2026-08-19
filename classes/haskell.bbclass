@@ -103,6 +103,10 @@ GHC_OE_WRAPPER_DIR = "${WORKDIR}/ghc-wrappers"
 GHC_CLEAR_PACKAGE_DB = ""
 GHC_CLEAR_PACKAGE_DB:class-target = "-clear-package-db"
 
+# When DISABLE_GHC_WRAPPERS=1 (TH packages), still pass --sysroot at link.
+GHC_NO_WRAPPER_LINK_OPTS = ""
+GHC_NO_WRAPPER_LINK_OPTS:class-target = "-optl--sysroot=${STAGING_DIR_TARGET} -optl-lpthread"
+
 haskell_write_oe_wrappers() {
     install -d "${GHC_OE_WRAPPER_DIR}"
     cat > "${GHC_OE_WRAPPER_DIR}/ghc-cc" <<EOF
@@ -136,6 +140,15 @@ haskell_setup_ghc_opts() {
         if [ ! -e "${S}/configure" ]; then
             RUNGHC_OE_OPTS="--with-gcc=${GHC_OE_WRAPPER_DIR}/ghc-cc --with-ld=${GHC_OE_WRAPPER_DIR}/ghc-ld"
         fi
+    else
+        # TH packages (e.g. hkg-dbus) must compile/load with the host toolchain
+        # so splices can dlopen host-compatible .so files. Still pass --sysroot
+        # to the linker so glibc's absolute-path libc.so script resolves.
+        case "${CLASSOVERRIDE}" in
+        class-target)
+            GHC_EXTRA_OPTS="-optl--sysroot=${STAGING_DIR_TARGET} -optl-lpthread"
+            ;;
+        esac
     fi
 }
 
