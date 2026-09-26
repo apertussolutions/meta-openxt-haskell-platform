@@ -32,6 +32,7 @@ FILES:${PN} = " \
     ${libdir}/ghc-${PV}/rts/libHSrts_debug-ghc${PV}.so \
     ${libdir}/ghc-${PV}/rts/libHSrts_thr-ghc${PV}.so \
     ${libdir}/ghc-${PV}/rts/libHSrts_thr_debug-ghc${PV}.so \
+    ${libdir}/ghc-${PV}/rts/libffi.so.* \
     ${libdir}/ghc-${PV}/stm-*/*.so \
     ${libdir}/ghc-${PV}/syb-*/*.so \
     ${libdir}/ghc-${PV}/template-haskell-*/*.so \
@@ -42,8 +43,9 @@ FILES:${PN} = " \
     ${libdir}/ghc-${PV}/utf8-string-*/*.so \
 "
 # ldflags: GHC shared objects omit GNU_HASH under our link flags.
-# file-rdeps: RTS links libffi; shlib dependency resolution is brittle
-# across libffi SONAME bumps — declare RDEPENDS and skip the QA noise.
+# file-rdeps: RTS NEEDs bundled libffi.so.7 (DT_RUNPATH=$ORIGIN, so it must
+# sit in rts/). System libffi is SONAME .8, which the executables NEEDED;
+# keep that RDEPENDS and ship the GHC copy alongside libHSrts.
 INSANE_SKIP:${PN} = "installed-vs-shipped ldflags file-rdeps"
 RDEPENDS:${PN} += "libffi"
 

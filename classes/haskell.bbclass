@@ -224,10 +224,15 @@ do_fixup_rpath:class-target() {
 
         f_type="$(file -b ${f})"
         if [ "${f_type%% *}" = "ELF" ]; then
-            if ! RPATH="$(chrpath ${f})" ; then
+            if ! RPATH="$(chrpath -l "$f")" ; then
                 continue
             fi
-            RPATH=${RPATH##*RPATH=}
+            # chrpath prints "<file>: RPATH=..." or "<file>: RUNPATH=...".
+            # Binutils is built with --enable-new-dtags, so GHC emits
+            # DT_RUNPATH. ${var##*RPATH=} does not match RUNPATH (RPATH is
+            # not a substring); baking the banner into the tag makes ld.so
+            # miss libHS*.so under /usr/lib/ghc-*/.
+            RPATH=$(printf '%s\n' "$RPATH" | sed -E 's/^.*: R(UN)?PATH=//')
             # Replace native sysroot before target sysroot: STAGING_DIR_HOST
             # (.../recipe-sysroot) is a prefix of .../recipe-sysroot-native,
             # so a naive strip leaves broken "-native/usr/lib/..." entries.
